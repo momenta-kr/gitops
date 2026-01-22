@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-service
+  namespace: prod
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels: { app: stock-service }
+  template:
+    metadata:
+      labels: { app: stock-service }
+    spec:
+      containers:
+        - name: stock-service
+          image: nohyunha95/stock-service:0.0.11
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+          envFrom:
+            - secretRef:
+                name: stock-service-secrets
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8082 }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8082 }
+            initialDelaySeconds: 30
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-service
+  namespace: prod
+spec:
+  selector: { app: stock-service }
+  ports:
+    - port: 8082
+      targetPort: 8082
+  type: ClusterIP
