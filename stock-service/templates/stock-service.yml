@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: stock-service
-          image: nohyunha95/stock-service:{{ Values.image.tag }}
+          image: nohyunha95/stock-service:{{ .Values.image.tag }}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8082
