@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: batch-service
-          image: nohyunha95/batch-service:0.0.7
+          image: nohyunha95/batch-service:{{ .Values.image.tag }}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8090
